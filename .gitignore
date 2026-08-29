@@ -4,7 +4,10 @@ __pycache__/
 .env
 results.json
 data/catalog.jsonl
+data/catalog.embeddings.npy
 data/releases/
+venv/
+.idea/
 # Organizer-only code, private evaluation data, manifests, and build reports.
 organizer/
 secure/

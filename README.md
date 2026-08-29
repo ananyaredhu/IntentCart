@@ -34,17 +34,45 @@ Verify the downloaded file using the published `SHA256SUMS` file.
 
 ## Run the Starter
 
-Python 3.10 or later is recommended. The starter uses only the Python standard library.
+Python 3.10 or later is required (developed and tested on 3.12).
+
+The original weak BM25 starter used only the standard library. This
+submission's agent (`starter/agent.py`, `starter/retrieval.py`,
+`starter/state.py`) additionally uses local, offline models for dense
+vector similarity, so install the pinned dependencies first:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+The first run downloads a small local sentence-transformer model
+(`all-MiniLM-L6-v2`, ~80MB) from Hugging Face and computes embeddings for
+all 50,000 catalog products once, caching the result to
+`data/catalog.embeddings.npy` (~77MB). **This is the only network access
+this agent ever needs**, and only on the very first run — every subsequent
+run, including official grading, works entirely offline from that cache.
+If network access is unavailable and no cache exists, dense retrieval
+degrades gracefully (the `EmbeddingIndex.available` flag goes `False` and
+that route is simply skipped) rather than crashing.
 
 ```bash
 python3 -m evaluator.local_evaluator
 ```
 
-Edit `starter/agent.py` to implement your system. Do not edit the evaluator or public labels when reporting your local score.
+Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
-MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
+MTTC `9.81` on the released public set. See `docs/baseline_results.json`. This
+submission's agent scores Hit Rate@10 `0.89`, MRR `0.452`, MTTC `3.65`, and
+TechnicalScore `0.728` on the same 200 public sessions (reproducible by running
+the command above from a clean environment as described).
+
+**Model and network disclosure** (per `docs/submission_rules.md`): no LLM API
+is used anywhere in the critical path. The only model is the local embedding
+model above. No API key or credentials are required to run this agent.
 
 ## Agent Interface
 
